@@ -1,7 +1,11 @@
 import Header from '@/components/layout/Header'
 import PostCard from '@/components/common/PostCard'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { PostProps } from '@/interfaces'
+
+interface PostsPageProps {
+  posts: PostProps[]
+}
 
 interface ApiPost {
   userId: number
@@ -10,29 +14,14 @@ interface ApiPost {
   body: string
 }
 
-const Posts = () => {
-  const [posts, setPosts] = useState<PostProps[]>([])
-
-  useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/posts')
-      .then(res => res.json())
-      .then((data: ApiPost[]) => {
-        const formatted: PostProps[] = data.map(post => ({
-          title: post.title,
-          content: post.body,
-          userId: post.userId
-        }))
-
-        setPosts(formatted)
-      })
-  }, [])
-
+const Posts: React.FC<PostsPageProps> = ({ posts = [] }) => {
   return (
     <>
       <Header />
-      <div className="text-center p-8 text-2xl">Posts</div>
+      <div className="text-center p-8 text-3xl font-bold">Posts</div>
 
-      <div className="flex flex-col items-center gap-4 px-4">
+      {/* Responsive grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4">
         {posts.map((post, index) => (
           <PostCard
             key={index}
@@ -44,6 +33,24 @@ const Posts = () => {
       </div>
     </>
   )
+}
+
+export const getStaticProps = async () => {
+  try {
+    const res = await fetch('https://jsonplaceholder.typicode.com/posts')
+    const data: ApiPost[] = await res.json()
+
+    const posts: PostProps[] = data.map(post => ({
+      title: post.title,
+      content: post.body,
+      userId: post.userId
+    }))
+
+    return { props: { posts } }
+  } catch (error) {
+    console.error('Failed to fetch posts:', error)
+    return { props: { posts: [] } }
+  }
 }
 
 export default Posts
