@@ -2,7 +2,7 @@ import Link from "next/link";
 import React from "react";
 
 const Header = () => {
-  return <div className="flex flex-row justify-between px-8">
+  return <div className="flex flex-row justify-between px-8 py-4">
     Header
     <div className="flex gap-6">
         <Link href="/home">Home</Link>
