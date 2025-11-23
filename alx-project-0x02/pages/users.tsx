@@ -1,29 +1,20 @@
+// pages/users.tsx
+
 import Header from '@/components/layout/Header'
 import UserCard from '@/components/common/UserCard'
-import React from 'react'
 import { UserProps } from '@/interfaces'
+import React from 'react'
 
 interface UsersPageProps {
   users: UserProps[]
 }
 
-interface ApiUser {
-  name: string
-  email: string
-  address: {
-    street: string
-    suite: string
-    city: string
-  }
-}
-
-const Users: React.FC<UsersPageProps> = ({ users = [] }) => {
+const Users = ({ users }: UsersPageProps) => {
   return (
-    <>
+    <div>
       <Header />
-      <div className="text-center p-8 text-2xl font-bold">Users</div>
 
-      <div className="flex flex-wrap justify-center gap-6 px-4">
+      <div className="flex flex-wrap gap-4 p-4">
         {users.map((user, index) => (
           <UserCard
             key={index}
@@ -33,33 +24,24 @@ const Users: React.FC<UsersPageProps> = ({ users = [] }) => {
           />
         ))}
       </div>
-    </>
+    </div>
   )
 }
 
-export const getStaticProps = async () => {
-  try {
-    const res = await fetch('https://jsonplaceholder.typicode.com/users')
-    const data: ApiUser[] = await res.json()
+export async function getStaticProps() {
+  const response = await fetch("https://jsonplaceholder.typicode.com/users")
+  const data = await response.json()
 
-    const users: UserProps[] = data.map(user => ({
-      name: user.name,
-      email: user.email,
-      address: `${user.address.street}, ${user.address.suite}, ${user.address.city}`
-    }))
+  const users: UserProps[] = data.map((user: any) => ({
+    name: user.name,
+    email: user.email,
+    address: `${user.address.street}, ${user.address.city}`
+  }))
 
-    return {
-      props: {
-        users
-      }
-    }
-  } catch (error) {
-    console.error('Failed to fetch users:', error)
-    return {
-      props: {
-        users: []
-      }
-    }
+  return {
+    props: {
+      users,
+    },
   }
 }
 
